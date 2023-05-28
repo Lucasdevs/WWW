@@ -29,6 +29,11 @@
         </div>
         <button type="submit" class="btn-submit">Cadastrar</button>
       </form>
+      <div>
+        <button @click="getCandidatesH()" class="btn-hired">Filtrar por contratados</button>
+        <button @click="getCandidatesNonH()" class="btn-hired">Filtrar por não contratados</button>
+        <button @click="fetchCandidates()" class="btn-hired">Limpar filtros</button>
+      </div>
     </section>
 
     <section class="table-section">
@@ -93,27 +98,58 @@ export default {
           console.error(error);
         });
     },
-    addCandidate() {
-      this.newCandidate.id = Math.floor(Math.random() *10);
-      axios.post('http://localhost:3000/candidates', this.newCandidate)
+    getCandidatesH(){
+      axios.get('http://localhost:3000/candidates/hired')
         .then(response => {
-          this.candidates.push(response.data);
-          this.resetNewCandidate();
+          this.candidates = response.data;
         })
         .catch(error => {
           console.error(error);
         });
     },
+    getCandidatesNonH(){
+      axios.get('http://localhost:3000/candidates/non-hired')
+        .then(response => {
+          this.candidates = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    addCandidate() {
+      if(this.editingCandidate){
+        this.editingCandidate = this.newCandidate;
+        this.saveCandidate();
+      } else {
+        if(this.newCandidate.hireDate.length && !this.newCandidate.hired){
+          this.newCandidate.hireDate = '';
+        }
+        this.newCandidate.id = Math.floor(Math.random() *1000);
+        axios.post('http://localhost:3000/candidates', this.newCandidate)
+          .then(response => {
+            this.candidates.push(response.data);
+            this.resetNewCandidate();
+          })
+          .catch(error => {
+            console.error(error);
+          });
+        }
+    },
     editCandidate(candidate) {
+      this.newCandidate = { ...candidate };
       this.editingCandidate = { ...candidate };
     },
     saveCandidate() {
-      axios.put(`http://localhost:3000/candidates/${this.editingCandidate.id}`, this.editingCandidate)
+      if(this.editingCandidate.hireDate.length && !this.editingCandidate.hired){
+        this.editingCandidate.hireDate = '';
+      }
+      axios.put(`http://localhost:3000/candidates`, this.editingCandidate)
         .then(response => {
           const index = this.candidates.findIndex(candidate => candidate.id === response.data.id);
           if (index !== -1) {
             this.candidates.splice(index, 1, response.data);
             this.editingCandidate = null;
+            this.resetNewCandidate();
           }
         })
         .catch(error => {
@@ -189,13 +225,22 @@ input[type="checkbox"] {
 
 .btn-submit,
 .btn-edit,
+.btn-hired,
 .btn-delete {
   padding: 8px 16px;
   background-color: #ff3d00;
+  margin-top: 3px;
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.btn-hired {
+  background-color: #fbc02d;
+  margin-right: 8px;
+  margin-left: 2px;
+  margin-top: 15px;
 }
 
 .btn-edit {

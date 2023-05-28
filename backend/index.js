@@ -34,8 +34,8 @@ app.post('/candidates', (req, res) => {
 });
 
 // Rota para atualizar um candidato existente
-app.put('/candidates/:id', (req, res) => {
-  const id = req.params.id;
+app.put('/candidates', (req, res) => {
+  const id = parseInt(req.body.id);
   const updatedCandidate = req.body;
 
   candidates = candidates.map(candidate => {
