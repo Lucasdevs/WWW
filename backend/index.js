@@ -9,31 +9,31 @@ app.use(bodyParser.json());
 
 let candidates = [];
 
-// Rota para obter todos os candidatos
+
 app.get('/candidates', (req, res) => {
   res.json(candidates);
 });
 
-// Rota para obter candidatos não contratados
+
 app.get('/candidates/non-hired', (req, res) => {
   const nonHiredCandidates = candidates.filter(candidate => !candidate.hired);
   res.json(nonHiredCandidates);
 });
 
-// Rota para obter candidatos contratados
+
 app.get('/candidates/hired', (req, res) => {
   const hiredCandidates = candidates.filter(candidate => candidate.hired);
   res.json(hiredCandidates);
 });
 
-// Rota para cadastrar um novo candidato
+
 app.post('/candidates', (req, res) => {
   const candidate = req.body;
   candidates.push(candidate);
   res.status(201).json(candidate);
 });
 
-// Rota para atualizar um candidato existente
+
 app.put('/candidates', (req, res) => {
   const id = parseInt(req.body.id);
   const updatedCandidate = req.body;
@@ -48,7 +48,7 @@ app.put('/candidates', (req, res) => {
   res.json(updatedCandidate);
 });
 
-// Rota para remover um candidato
+
 app.delete('/candidates', (req, res) => {
   var { id } = req.query;
 
@@ -60,7 +60,7 @@ app.delete('/candidates', (req, res) => {
   res.sendStatus(204);
 });
 
-// Inicializar o servidor
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
